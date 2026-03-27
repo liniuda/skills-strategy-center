@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills 策略中心 - 多场景分析平台</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Skills 策略中心</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="home">全景总览</button>
+      <button class="nav-tab" data-tab="dashboard">场景分析</button>
+      <button class="nav-tab" data-tab="cases">案例库<span class="nav-badge">18</span></button>
+      <button class="nav-tab" data-tab="editor">策略编辑器</button>
+      <button class="nav-tab" data-tab="kanban">看板<span class="nav-badge">10</span></button>
+      <button class="nav-tab" data-tab="matrix">能力矩阵</button>
+      <button class="nav-tab" data-tab="monitor">监控</button>
+      <button class="nav-tab" data-tab="arsenal">武器库<span class="nav-badge">18</span></button>
+    </div>
+  </div>
+</nav>
+
+<!-- 8大功能模块容器 -->
+<div id="sec-home" class="section active"></div>
+<div id="sec-dashboard" class="section"></div>
+<div id="sec-cases" class="section"></div>
+<div id="sec-editor" class="section"></div>
+<div id="sec-kanban" class="section"></div>
+<div id="sec-matrix" class="section"></div>
+<div id="sec-monitor" class="section"></div>
+<div id="sec-arsenal" class="section"></div>
+
+<!-- 模态框 -->
+<div class="modal-overlay" id="caseModal">
+  <div class="modal" id="caseModalContent"></div>
+</div>
+<div class="modal-overlay" id="taskModal">
+  <div class="modal" id="taskModalContent"></div>
+</div>
+
+<!-- Toast 提示 -->
+<div class="toast" id="toast"></div>
+
+<!-- 应用入口 (ES Module) -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
