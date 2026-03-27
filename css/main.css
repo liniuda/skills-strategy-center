@@ -404,3 +404,159 @@ body {
   .skill-pills { gap: 6px; }
   .skill-pill { padding: 6px 12px; font-size: 12px; }
 }
+
+/* ================================================================
+   Knowledge Graph — Neural Network Visualization
+   ================================================================ */
+
+.graph-wrap {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 24px;
+}
+
+.graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.graph-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+.graph-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.graph-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.graph-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Nodes */
+.graph-node {
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+}
+.graph-node circle {
+  transition: r 0.25s ease, stroke-width 0.25s ease;
+}
+.graph-node-hover {
+  transform: scale(1.35);
+  filter: brightness(1.15);
+}
+.graph-node-connected {
+  transform: scale(1.12);
+  opacity: 1;
+}
+.graph-node-dimmed {
+  opacity: 0.12;
+}
+
+/* Edges */
+.graph-edge {
+  transition: opacity 0.35s ease, stroke-width 0.35s ease;
+  pointer-events: none;
+}
+.graph-edge-active {
+  stroke-dasharray: 8 4;
+  animation: graphFlow 1.2s linear infinite;
+}
+
+/* Glow pulse */
+.graph-glow {
+  animation: graphPulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes graphFlow {
+  to { stroke-dashoffset: -12; }
+}
+
+@keyframes graphPulse {
+  0%, 100% { opacity: 0.10; transform: scale(1); }
+  50%      { opacity: 0.25; transform: scale(1.2); }
+}
+
+/* Tooltip */
+.graph-tooltip {
+  position: absolute;
+  z-index: 50;
+  background: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+  padding: 14px 18px;
+  min-width: 200px;
+  max-width: 270px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  border-left: 3px solid var(--primary);
+}
+.graph-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.graph-tooltip-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.graph-tooltip-layer {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-bottom: 8px;
+}
+.graph-tooltip-stat {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+.graph-tooltip-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.graph-tooltip-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.graph-tooltip-links {
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .graph-wrap svg { min-height: 400px; }
+}
+@media (max-width: 768px) {
+  #graphSvgContainer { overflow-x: auto; }
+  #graphSvgContainer svg { min-width: 900px; }
+}

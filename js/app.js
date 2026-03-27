@@ -25,6 +25,7 @@ import { renderKanban } from './modules/kanban.js';
 import { renderMatrix } from './modules/matrix.js';
 import { renderMonitor } from './modules/monitor.js';
 import { renderArsenal } from './modules/arsenal.js';
+import { renderGraph } from './modules/graph.js';
 
 // 全局状态
 let selectedSkillId = 'logistics';
@@ -82,6 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tabName === 'kanban') renderKanban();
       if (tabName === 'monitor') renderMonitor();
       if (tabName === 'arsenal') renderArsenal();
+      if (tabName === 'graph') renderGraph();
     });
   });
 
@@ -94,4 +96,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMatrix();
   renderMonitor();
   renderArsenal();
+  renderGraph();
 });
