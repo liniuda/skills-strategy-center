@@ -8,43 +8,93 @@
 </head>
 <body>
 
-<!-- 顶部导航 -->
-<nav class="nav">
-  <div class="nav-inner">
-    <div class="nav-logo">Skills 策略中心</div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-tab="home">全景总览</button>
-      <button class="nav-tab" data-tab="dashboard">场景分析</button>
-      <button class="nav-tab" data-tab="cases">案例库<span class="nav-badge">18</span></button>
-      <button class="nav-tab" data-tab="editor">策略编辑器</button>
-      <button class="nav-tab" data-tab="kanban">看板<span class="nav-badge">10</span></button>
-      <button class="nav-tab" data-tab="matrix">能力矩阵</button>
-      <button class="nav-tab" data-tab="monitor">监控</button>
-      <button class="nav-tab" data-tab="arsenal">武器库<span class="nav-badge">18</span></button>
-      <button class="nav-tab" data-tab="graph">知识图谱</button>
+<!-- 侧边栏 -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <svg class="sidebar-logo-icon" width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="var(--primary)"/>
+        <path d="M9 12h6v8H9zM17 8h6v12h-6z" fill="#fff" opacity=".9"/>
+        <path d="M9 8h6v2H9zM17 22h6v2h-6z" fill="#fff" opacity=".5"/>
+      </svg>
+      <span class="sidebar-logo-text">Skills 策略中心</span>
     </div>
-    <div class="nav-user" id="navUser"></div>
+    <button class="sidebar-toggle" id="sidebarToggle" title="折叠/展开">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
   </div>
-</nav>
+  <nav class="sidebar-nav">
+    <button class="sidebar-item nav-tab active" data-tab="home">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span class="sidebar-label">全景总览</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="dashboard">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+      <span class="sidebar-label">场景分析</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="cases">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="sidebar-label">案例库</span>
+      <span class="sidebar-badge nav-badge">18</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="editor">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+      <span class="sidebar-label">策略编辑器</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="kanban">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="5" height="18" rx="1"/><rect x="10" y="3" width="5" height="12" rx="1"/><rect x="17" y="3" width="5" height="15" rx="1"/></svg></span>
+      <span class="sidebar-label">看板</span>
+      <span class="sidebar-badge nav-badge">10</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="matrix">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="5" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="19" cy="5" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="19" r="1.5"/><circle cx="12" cy="19" r="1.5"/><circle cx="19" cy="19" r="1.5"/></svg></span>
+      <span class="sidebar-label">能力矩阵</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="monitor">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      <span class="sidebar-label">监控</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="arsenal">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+      <span class="sidebar-label">武器库</span>
+      <span class="sidebar-badge nav-badge">18</span>
+    </button>
+    <button class="sidebar-item nav-tab" data-tab="graph">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><line x1="8.5" y1="7.5" x2="15.5" y2="16.5"/><line x1="15.5" y1="7.5" x2="8.5" y2="16.5"/></svg></span>
+      <span class="sidebar-label">知识图谱</span>
+    </button>
+  </nav>
+  <div class="sidebar-footer nav-user" id="navUser"></div>
+</aside>
 
-<!-- 8大功能模块容器 -->
-<div id="sec-home" class="section active"></div>
-<div id="sec-dashboard" class="section"></div>
-<div id="sec-cases" class="section"></div>
-<div id="sec-editor" class="section"></div>
-<div id="sec-kanban" class="section"></div>
-<div id="sec-matrix" class="section"></div>
-<div id="sec-monitor" class="section"></div>
-<div id="sec-arsenal" class="section"></div>
-<div id="sec-graph" class="section"></div>
+<!-- 移动端遮罩 -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-<!-- 模态框 -->
-<div class="modal-overlay" id="caseModal">
-  <div class="modal" id="caseModalContent"></div>
-</div>
-<div class="modal-overlay" id="taskModal">
-  <div class="modal" id="taskModalContent"></div>
-</div>
+<!-- 移动端汉堡按钮 -->
+<button class="mobile-menu-btn" id="mobileMenuBtn">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+
+<!-- 内容区 -->
+<main class="main-content">
+  <div id="sec-home" class="section active"></div>
+  <div id="sec-dashboard" class="section"></div>
+  <div id="sec-cases" class="section"></div>
+  <div id="sec-editor" class="section"></div>
+  <div id="sec-kanban" class="section"></div>
+  <div id="sec-matrix" class="section"></div>
+  <div id="sec-monitor" class="section"></div>
+  <div id="sec-arsenal" class="section"></div>
+  <div id="sec-graph" class="section"></div>
+
+  <!-- 模态框 -->
+  <div class="modal-overlay" id="caseModal">
+    <div class="modal" id="caseModalContent"></div>
+  </div>
+  <div class="modal-overlay" id="taskModal">
+    <div class="modal" id="taskModalContent"></div>
+  </div>
+</main>
 
 <!-- Toast 提示 -->
 <div class="toast" id="toast"></div>

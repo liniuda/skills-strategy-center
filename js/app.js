@@ -71,11 +71,53 @@ function handleCreateStrategy() {
 }
 
 /**
+ * 初始化侧边栏交互
+ */
+function initSidebar() {
+  const toggle = document.getElementById('sidebarToggle');
+  const menuBtn = document.getElementById('mobileMenuBtn');
+  const backdrop = document.getElementById('sidebarBackdrop');
+
+  // 恢复折叠状态
+  if (localStorage.getItem('ssc_sidebar_collapsed') === 'true') {
+    document.body.classList.add('sidebar-collapsed');
+  }
+
+  // 折叠/展开切换
+  toggle.addEventListener('click', () => {
+    document.body.classList.toggle('sidebar-collapsed');
+    const collapsed = document.body.classList.contains('sidebar-collapsed');
+    localStorage.setItem('ssc_sidebar_collapsed', String(collapsed));
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 300);
+  });
+
+  // 移动端: 打开抽屉
+  menuBtn.addEventListener('click', () => {
+    document.body.classList.add('sidebar-open');
+  });
+
+  // 移动端: 关闭抽屉
+  backdrop.addEventListener('click', () => {
+    document.body.classList.remove('sidebar-open');
+  });
+
+  // 窗口变大时自动关闭抽屉
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      document.body.classList.remove('sidebar-open');
+    }
+  });
+}
+
+/**
  * 初始化应用
  */
 document.addEventListener('DOMContentLoaded', () => {
   // 认证守卫 - 未登录跳转到 login.html
   requireAuth();
+
+  // 初始化侧边栏
+  initSidebar();
 
   // 渲染用户菜单
   renderUserMenu(document.getElementById('navUser'));
@@ -91,6 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tabName === 'monitor') renderMonitor();
       if (tabName === 'arsenal') renderArsenal();
       if (tabName === 'graph') renderGraph();
+      // 移动端: 切换 tab 后关闭抽屉
+      if (window.innerWidth <= 768) {
+        document.body.classList.remove('sidebar-open');
+      }
     });
   });
 
