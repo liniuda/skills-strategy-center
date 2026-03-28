@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 - Skills 策略中心</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+<div class="auth-page">
+  <!-- Left Brand Panel -->
+  <div class="auth-brand">
+    <div class="auth-particle"></div>
+    <div class="auth-particle"></div>
+    <div class="auth-particle"></div>
+    <div class="auth-particle"></div>
+
+    <svg class="auth-neural" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+      <!-- Layer 0 nodes -->
+      <circle cx="80" cy="120" r="8" fill="#4F46E5" opacity="0.6"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/></circle>
+      <circle cx="80" cy="220" r="12" fill="#4F46E5" opacity="0.8"><animate attributeName="opacity" values="0.6;1;0.6" dur="4s" repeatCount="indefinite"/></circle>
+      <circle cx="80" cy="320" r="6" fill="#4F46E5" opacity="0.5"/>
+      <circle cx="80" cy="420" r="10" fill="#4F46E5" opacity="0.7"><animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite"/></circle>
+      <circle cx="80" cy="500" r="7" fill="#4F46E5" opacity="0.5"/>
+      <!-- Layer 1 nodes -->
+      <circle cx="240" cy="100" r="7" fill="#7C3AED" opacity="0.6"/>
+      <circle cx="240" cy="200" r="14" fill="#7C3AED" opacity="0.8"><animate attributeName="opacity" values="0.5;1;0.5" dur="3.2s" repeatCount="indefinite"/></circle>
+      <circle cx="240" cy="300" r="9" fill="#7C3AED" opacity="0.6"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="4.5s" repeatCount="indefinite"/></circle>
+      <circle cx="240" cy="400" r="6" fill="#7C3AED" opacity="0.5"/>
+      <circle cx="240" cy="490" r="10" fill="#7C3AED" opacity="0.7"/>
+      <!-- Layer 2 nodes -->
+      <circle cx="400" cy="160" r="10" fill="#059669" opacity="0.7"><animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.8s" repeatCount="indefinite"/></circle>
+      <circle cx="400" cy="280" r="8" fill="#059669" opacity="0.6"/>
+      <circle cx="400" cy="380" r="12" fill="#059669" opacity="0.8"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="4.2s" repeatCount="indefinite"/></circle>
+      <circle cx="400" cy="470" r="6" fill="#059669" opacity="0.5"/>
+      <!-- Layer 3 nodes -->
+      <circle cx="530" cy="180" r="9" fill="#D97706" opacity="0.7"><animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite"/></circle>
+      <circle cx="530" cy="310" r="11" fill="#D97706" opacity="0.8"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="4s" repeatCount="indefinite"/></circle>
+      <circle cx="530" cy="440" r="7" fill="#D97706" opacity="0.6"/>
+      <!-- Edges -->
+      <g stroke-width="1.2" fill="none" opacity="0.2" stroke-linecap="round">
+        <path d="M80,120 C160,120 160,100 240,100" stroke="#6366F1"/>
+        <path d="M80,120 C160,120 160,200 240,200" stroke="#6366F1"/>
+        <path d="M80,220 C160,220 160,200 240,200" stroke="#6366F1"/>
+        <path d="M80,220 C160,220 160,300 240,300" stroke="#6366F1"/>
+        <path d="M80,320 C160,320 160,300 240,300" stroke="#6366F1"/>
+        <path d="M80,320 C160,320 160,400 240,400" stroke="#6366F1"/>
+        <path d="M80,420 C160,420 160,400 240,400" stroke="#6366F1"/>
+        <path d="M80,420 C160,420 160,490 240,490" stroke="#6366F1"/>
+        <path d="M80,500 C160,500 160,490 240,490" stroke="#6366F1"/>
+        <path d="M240,100 C320,100 320,160 400,160" stroke="#7C3AED"/>
+        <path d="M240,200 C320,200 320,160 400,160" stroke="#7C3AED"/>
+        <path d="M240,200 C320,200 320,280 400,280" stroke="#7C3AED"/>
+        <path d="M240,300 C320,300 320,280 400,280" stroke="#7C3AED"/>
+        <path d="M240,300 C320,300 320,380 400,380" stroke="#7C3AED"/>
+        <path d="M240,400 C320,400 320,380 400,380" stroke="#7C3AED"/>
+        <path d="M240,490 C320,490 320,470 400,470" stroke="#7C3AED"/>
+        <path d="M400,160 C470,160 470,180 530,180" stroke="#059669"/>
+        <path d="M400,160 C470,160 470,310 530,310" stroke="#059669"/>
+        <path d="M400,280 C470,280 470,310 530,310" stroke="#059669"/>
+        <path d="M400,380 C470,380 470,310 530,310" stroke="#059669"/>
+        <path d="M400,380 C470,380 470,440 530,440" stroke="#059669"/>
+        <path d="M400,470 C470,470 470,440 530,440" stroke="#059669"/>
+      </g>
+    </svg>
+
+    <div class="auth-brand-content">
+      <div class="auth-brand-logo">Skills 策略中心</div>
+      <div class="auth-brand-sub">多场景分析平台 · 智能策略引擎<br>基于 5000 条客服会话的深度挖掘与知识图谱构建</div>
+      <div class="auth-brand-stats">
+        <div class="auth-brand-stat">
+          <div class="auth-brand-stat-value">3,794</div>
+          <div class="auth-brand-stat-label">有效会话</div>
+        </div>
+        <div class="auth-brand-stat">
+          <div class="auth-brand-stat-value">18</div>
+          <div class="auth-brand-stat-label">技能域</div>
+        </div>
+        <div class="auth-brand-stat">
+          <div class="auth-brand-stat-value">30</div>
+          <div class="auth-brand-stat-label">映射场景</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Form Panel -->
+  <div class="auth-form-panel">
+    <div class="auth-card">
+      <div class="auth-mobile-brand">
+        <div class="auth-mobile-brand-logo">Skills 策略中心</div>
+        <div class="auth-mobile-brand-sub">多场景分析平台 · 智能策略引擎</div>
+      </div>
+
+      <h1 class="auth-card-title" id="formTitle">欢迎回来</h1>
+      <p class="auth-card-desc" id="formDesc">登录以访问策略中心</p>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" data-mode="login">登录</button>
+        <button class="auth-tab" id="tabRegister" data-mode="register">注册</button>
+        <div class="auth-tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <!-- Global Error -->
+      <div class="auth-global-error" id="globalError"></div>
+      <div class="auth-lockout" id="lockoutMsg"></div>
+
+      <!-- Login Form -->
+      <form class="auth-form active" id="loginForm" novalidate>
+        <div class="auth-field">
+          <label class="auth-label">邮箱</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">&#9993;</span>
+            <input class="auth-input" type="email" id="loginEmail" placeholder="name@example.com" autocomplete="email">
+          </div>
+          <div class="auth-field-error" id="loginEmailErr"></div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">密码</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">&#128274;</span>
+            <input class="auth-input" type="password" id="loginPwd" placeholder="输入密码" autocomplete="current-password">
+            <button type="button" class="auth-eye-btn" data-target="loginPwd">&#128065;</button>
+          </div>
+          <div class="auth-field-error" id="loginPwdErr"></div>
+        </div>
+        <button type="submit" class="auth-submit" id="loginBtn">
+          <span class="auth-spinner"></span>
+          <span class="auth-submit-text">登 录</span>
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form class="auth-form" id="registerForm" novalidate>
+        <div class="auth-field">
+          <label class="auth-label">邮箱</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">&#9993;</span>
+            <input class="auth-input" type="email" id="regEmail" placeholder="name@example.com" autocomplete="email">
+          </div>
+          <div class="auth-field-error" id="regEmailErr"></div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">用户名</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">&#128100;</span>
+            <input class="auth-input" type="text" id="regName" placeholder="您的名字" autocomplete="name">
+          </div>
+          <div class="auth-field-error" id="regNameErr"></div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">密码</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">&#128274;</span>
+            <input class="auth-input" type="password" id="regPwd" placeholder="至少 6 个字符" autocomplete="new-password">
+            <button type="button" class="auth-eye-btn" data-target="regPwd">&#128065;</button>
+          </div>
+          <div class="auth-field-error" id="regPwdErr"></div>
+          <div class="auth-strength" id="pwdStrength">
+            <div class="auth-strength-bar"></div>
+            <div class="auth-strength-bar"></div>
+            <div class="auth-strength-bar"></div>
+            <div class="auth-strength-bar"></div>
+          </div>
+          <div class="auth-strength-label" id="pwdStrengthLabel"></div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">确认密码</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">&#128274;</span>
+            <input class="auth-input" type="password" id="regPwdConfirm" placeholder="再次输入密码" autocomplete="new-password">
+          </div>
+          <div class="auth-field-error" id="regPwdConfirmErr"></div>
+        </div>
+        <button type="submit" class="auth-submit" id="regBtn">
+          <span class="auth-spinner"></span>
+          <span class="auth-submit-text">注 册</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { login, register, getSession, evaluatePasswordStrength } from './js/auth.js';
+
+// Reverse guard: already logged in → go to main app
+if (getSession()) {
+  window.location.replace('index.html');
+}
+
+// Elements
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const indicator = document.getElementById('tabIndicator');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const formTitle = document.getElementById('formTitle');
+const formDesc = document.getElementById('formDesc');
+const globalError = document.getElementById('globalError');
+const lockoutMsg = document.getElementById('lockoutMsg');
+
+// Tab indicator position
+function updateIndicator(tab) {
+  indicator.style.left = tab.offsetLeft + 'px';
+  indicator.style.width = tab.offsetWidth + 'px';
+}
+
+// Initialize indicator
+requestAnimationFrame(() => updateIndicator(tabLogin));
+
+// Tab switching
+function switchMode(mode) {
+  const isLogin = mode === 'login';
+  tabLogin.classList.toggle('active', isLogin);
+  tabRegister.classList.toggle('active', !isLogin);
+  loginForm.classList.toggle('active', isLogin);
+  registerForm.classList.toggle('active', !isLogin);
+  formTitle.textContent = isLogin ? '欢迎回来' : '创建账号';
+  formDesc.textContent = isLogin ? '登录以访问策略中心' : '注册以开始使用策略中心';
+  updateIndicator(isLogin ? tabLogin : tabRegister);
+  globalError.classList.remove('show');
+  lockoutMsg.classList.remove('show');
+  clearFieldErrors();
+}
+
+tabLogin.addEventListener('click', () => switchMode('login'));
+tabRegister.addEventListener('click', () => switchMode('register'));
+
+// Field error helpers
+function showFieldErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+  el.previousElementSibling.querySelector('.auth-input')?.classList.add('error');
+}
+function clearFieldErr(id) {
+  const el = document.getElementById(id);
+  el.textContent = '';
+  el.classList.remove('show');
+  el.previousElementSibling?.querySelector('.auth-input')?.classList.remove('error');
+}
+function clearFieldErrors() {
+  document.querySelectorAll('.auth-field-error').forEach(e => {
+    e.textContent = ''; e.classList.remove('show');
+  });
+  document.querySelectorAll('.auth-input').forEach(e => e.classList.remove('error'));
+}
+
+// Eye toggle
+document.querySelectorAll('.auth-eye-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(btn.dataset.target);
+    const isPwd = input.type === 'password';
+    input.type = isPwd ? 'text' : 'password';
+    btn.innerHTML = isPwd ? '&#128064;' : '&#128065;';
+  });
+});
+
+// Password strength
+const regPwd = document.getElementById('regPwd');
+const strengthBars = document.querySelectorAll('#pwdStrength .auth-strength-bar');
+const strengthLabel = document.getElementById('pwdStrengthLabel');
+
+regPwd.addEventListener('input', () => {
+  const { level, label, color } = evaluatePasswordStrength(regPwd.value);
+  strengthBars.forEach((bar, i) => {
+    bar.style.background = i <= level ? color : '';
+  });
+  strengthLabel.textContent = regPwd.value ? label : '';
+  strengthLabel.style.color = color;
+});
+
+// Lockout
+let failCount = 0;
+let lockedUntil = 0;
+
+function checkLocked() {
+  if (Date.now() < lockedUntil) {
+    const secs = Math.ceil((lockedUntil - Date.now()) / 1000);
+    lockoutMsg.textContent = `操作过于频繁，请 ${secs} 秒后重试`;
+    lockoutMsg.classList.add('show');
+    return true;
+  }
+  lockoutMsg.classList.remove('show');
+  return false;
+}
+
+function setLoading(btn, loading) {
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+}
+
+// Login submit
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearFieldErrors();
+  globalError.classList.remove('show');
+  if (checkLocked()) return;
+
+  const email = document.getElementById('loginEmail').value;
+  const pwd = document.getElementById('loginPwd').value;
+  let valid = true;
+
+  if (!email) { showFieldErr('loginEmailErr', '请输入邮箱'); valid = false; }
+  if (!pwd) { showFieldErr('loginPwdErr', '请输入密码'); valid = false; }
+  if (!valid) return;
+
+  const btn = document.getElementById('loginBtn');
+  setLoading(btn, true);
+
+  await new Promise(r => setTimeout(r, 600));
+  const res = await login({ email, password: pwd });
+  setLoading(btn, false);
+
+  if (res.ok) {
+    window.location.href = 'index.html';
+  } else {
+    failCount++;
+    if (failCount >= 3) {
+      lockedUntil = Date.now() + 5000;
+      failCount = 0;
+      checkLocked();
+      const timer = setInterval(() => { if (!checkLocked()) clearInterval(timer); }, 1000);
+    }
+    globalError.textContent = res.error;
+    globalError.classList.add('show');
+  }
+});
+
+// Register submit
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearFieldErrors();
+  globalError.classList.remove('show');
+
+  const email = document.getElementById('regEmail').value;
+  const name = document.getElementById('regName').value;
+  const pwd = regPwd.value;
+  const pwd2 = document.getElementById('regPwdConfirm').value;
+  let valid = true;
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showFieldErr('regEmailErr', '请输入有效邮箱'); valid = false; }
+  if (!name || name.length < 2) { showFieldErr('regNameErr', '用户名至少 2 个字符'); valid = false; }
+  if (!pwd || pwd.length < 6) { showFieldErr('regPwdErr', '密码至少 6 个字符'); valid = false; }
+  if (pwd !== pwd2) { showFieldErr('regPwdConfirmErr', '两次密码不一致'); valid = false; }
+  if (!valid) return;
+
+  const btn = document.getElementById('regBtn');
+  setLoading(btn, true);
+
+  await new Promise(r => setTimeout(r, 600));
+  const res = await register({ email, password: pwd, name });
+  setLoading(btn, false);
+
+  if (res.ok) {
+    window.location.href = 'index.html';
+  } else {
+    globalError.textContent = res.error;
+    globalError.classList.add('show');
+  }
+});
+
+// Clear errors on input
+document.querySelectorAll('.auth-input').forEach(input => {
+  input.addEventListener('input', () => {
+    input.classList.remove('error');
+    const errEl = input.closest('.auth-field')?.querySelector('.auth-field-error');
+    if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+    globalError.classList.remove('show');
+  });
+});
+</script>
+
+</body>
+</html>

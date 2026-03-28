@@ -26,6 +26,7 @@ import { renderMatrix } from './modules/matrix.js';
 import { renderMonitor } from './modules/monitor.js';
 import { renderArsenal } from './modules/arsenal.js';
 import { renderGraph } from './modules/graph.js';
+import { requireAuth, renderUserMenu } from './auth.js';
 
 // 全局状态
 let selectedSkillId = 'logistics';
@@ -73,6 +74,12 @@ function handleCreateStrategy() {
  * 初始化应用
  */
 document.addEventListener('DOMContentLoaded', () => {
+  // 认证守卫 - 未登录跳转到 login.html
+  requireAuth();
+
+  // 渲染用户菜单
+  renderUserMenu(document.getElementById('navUser'));
+
   // 绑定 Tab 切换
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', function () {
