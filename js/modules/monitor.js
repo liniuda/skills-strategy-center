@@ -11,7 +11,7 @@ export function renderMonitor() {
   const active = REAL_SKILLS.filter(s => ['published', 'canary'].includes(s.status)).length;
   let html = `
     <h1 class="section-title">监控中心</h1>
-    <p class="section-desc">实时追踪 Skills 策略执行效果</p>
+    <p class="section-desc">实时追踪 Skills 策略执行效果 <button class="module-nav-link" id="monitorToKanban">查看策略看板 \u2192</button></p>
     <div class="stats-grid">
       <div class="stat-card purple"><div class="label">活跃 Skills</div><div class="value">${active}</div></div>
       <div class="stat-card green"><div class="label">平均 CSAT</div><div class="value">4.2</div></div>
@@ -62,6 +62,9 @@ export function renderMonitor() {
       </div>
     </div>`;
   document.getElementById('sec-monitor').innerHTML = html;
+  document.getElementById('monitorToKanban').addEventListener('click', () => {
+    if (window.sscSwitchTab) window.sscSwitchTab('kanban');
+  });
   renderSingleTrend('csatTrend30', TREND_DATA.csat, TREND_DATA.dates, '#4F46E5', 'CSAT', 3.5, 5.0);
   renderSingleTrend('fcrTrend30', TREND_DATA.fcr, TREND_DATA.dates, '#059669', 'FCR%', 70, 100);
 }

@@ -42,6 +42,9 @@ function switchTab(tab, btn) {
   }
 }
 
+// 暴露全局跳转函数供模块使用
+window.sscSwitchTab = switchTab;
+
 /**
  * Skill 选择回调 - 跳转到场景分析并选中指定 Skill
  */

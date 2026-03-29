@@ -14,7 +14,7 @@ export function renderMatrix() {
 
   let html = `
     <h1 class="section-title">能力矩阵</h1>
-    <p class="section-desc">${total} 种系统能力 \u00D7 ${REAL_SKILLS.length} 个 Skill 的覆盖分析</p>
+    <p class="section-desc">${total} 种系统能力 \u00D7 ${REAL_SKILLS.length} 个 Skill 的覆盖分析 <button class="module-nav-link" id="matrixToArsenal">查看能力缺口 \u2192</button></p>
     <div class="stats-grid">
       <div class="stat-card purple"><div class="label">能力类型</div><div class="value">${total}</div></div>
       <div class="stat-card green"><div class="label">通用能力 (\u22653 Skill)</div><div class="value">${universal}</div></div>
@@ -23,5 +23,8 @@ export function renderMatrix() {
     </div>
     <div class="heatmap-wrap"><h3>能力 \u00D7 Skill 覆盖热力图</h3><div id="heatmapChart"></div></div>`;
   document.getElementById('sec-matrix').innerHTML = html;
+  document.getElementById('matrixToArsenal').addEventListener('click', () => {
+    if (window.sscSwitchTab) window.sscSwitchTab('arsenal');
+  });
   renderHeatmapSVG('heatmapChart');
 }

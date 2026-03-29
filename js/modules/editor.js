@@ -79,10 +79,15 @@ function parseStrategy() {
       <div class="rule-card" style="border-left:3px solid #DC2626;"><div class="rule-card-title" style="color:#DC2626;">PRIORITY</div>
         <div class="rule-item"><span class="bullet" style="background:#DC2626"></span>${r.priority} ${r.priority === 0 ? '（最高）' : r.priority === 1 ? '（高）' : '（标准）'}</div>
       </div>
-      <button class="btn btn-primary" id="saveDraftBtn" style="margin-top:12px;width:100%;">\u{1F4BE} 保存为草稿</button>`;
+      <button class="btn btn-primary" id="saveDraftBtn" style="margin-top:12px;width:100%;">\u{1F4BE} 保存为草稿</button>
+      <button class="module-nav-link" id="goToKanban" style="margin-top:8px;width:100%;justify-content:center;">\u{1F4CB} 提交到看板 \u2192</button>`;
     panel.innerHTML = html;
 
     document.getElementById('saveDraftBtn').addEventListener('click', () => showToast('策略已保存为草稿'));
+    document.getElementById('goToKanban').addEventListener('click', () => {
+      showToast('策略已提交到看板');
+      if (window.sscSwitchTab) window.sscSwitchTab('kanban');
+    });
 
     if (r.conflicts.length > 0) {
       document.getElementById('conflictResult').innerHTML = r.conflicts.map(c => `<div class="conflict-alert">\u26A0\uFE0F ${c.msg}</div>`).join('');

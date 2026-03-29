@@ -234,10 +234,10 @@ export function renderGraph() {
   document.getElementById('graphSvgContainer').innerHTML = buildSVG(nodeMap);
 
   // animate stat counters
-  animateCounter('graphStat1', st.validConversations);
-  animateCounter('graphStat2', st.skillsIdentified);
-  animateCounter('graphStat3', st.scenariosMapped);
-  animateCounter('graphStat4', st.satisfactionFactors);
+  animateCounter(document.getElementById('graphStat1'), st.validConversations);
+  animateCounter(document.getElementById('graphStat2'), st.skillsIdentified);
+  animateCounter(document.getElementById('graphStat3'), st.scenariosMapped);
+  animateCounter(document.getElementById('graphStat4'), st.satisfactionFactors);
 
   // build adjacency
   const adj = buildAdjacency();
