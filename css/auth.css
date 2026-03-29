@@ -75,29 +75,35 @@ body {
   line-height: 1.6;
 }
 
-.auth-brand-stats {
+.auth-brand-stats,
+.auth-brand-stat,
+.auth-brand-stat-value,
+.auth-brand-stat-label { display: none; }
+
+.auth-brand-features {
   display: flex;
-  gap: 40px;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+.auth-brand-feature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.4;
+}
+.auth-brand-feature-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-}
-
-.auth-brand-stat {
-  text-align: center;
-}
-
-.auth-brand-stat-value {
-  font-size: 32px;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--primary-light), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.auth-brand-stat-label {
-  font-size: 12px;
-  color: rgba(255,255,255,0.45);
-  margin-top: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
 }
 
 /* Neural network decoration */

@@ -862,3 +862,317 @@ body.sidebar-open .sidebar-backdrop { display: block; }
     z-index: 60;
   }
 }
+
+/* ================================================================
+   Analysis Workbench (分析工作台)
+   ================================================================ */
+
+/* Upload Zone */
+.wb-upload-zone {
+  background: var(--card);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 24px;
+}
+.wb-upload-zone:hover {
+  border-color: var(--primary-light);
+  background: #FAFAFF;
+}
+.wb-upload-zone.dragover {
+  border-color: var(--primary);
+  background: #EEF2FF;
+  transform: scale(1.005);
+}
+.wb-upload-zone.analyzing {
+  cursor: default;
+  border-style: solid;
+  border-color: var(--primary-light);
+}
+.wb-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.wb-upload-icon {
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+.wb-upload-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.wb-upload-link {
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+.wb-upload-link:hover {
+  text-decoration: underline;
+}
+.wb-upload-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* File Info */
+.wb-file-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Analyzing Progress */
+.wb-analyzing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.wb-analyze-step {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+.wb-analyze-progress {
+  width: 280px;
+  height: 6px;
+  background: #F1F5F9;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.wb-analyze-bar {
+  height: 100%;
+  width: 20%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* Card Grid */
+.wb-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+/* Card */
+.wb-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+.wb-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+.wb-card.expanded {
+  grid-column: 1 / -1;
+  border-color: var(--primary);
+}
+
+.wb-card-header {
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.wb-card-header:hover {
+  background: #FAFAFF;
+}
+.wb-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.wb-card-file {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wb-card-skill {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.wb-card-stats {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.wb-card-time {
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+.wb-card-delete {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.wb-card-delete:hover {
+  background: #FEE2E2;
+  color: var(--danger);
+}
+
+/* Status Badge */
+.wb-status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.wb-status-badge.pending {
+  background: #EEF2FF;
+  color: var(--primary);
+}
+.wb-status-badge.conflict {
+  background: #FEF3C7;
+  color: #92400E;
+}
+.wb-status-badge.deployed {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+/* Detail Panel (expanded) */
+.wb-detail {
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--border);
+  animation: slideUp 0.3s ease;
+}
+.wb-section {
+  padding: 16px 0;
+  border-bottom: 1px solid #F1F5F9;
+}
+.wb-section:last-child {
+  border-bottom: none;
+}
+.wb-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+/* Sub-scenario bars */
+.wb-sub-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wb-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+.wb-sub-name {
+  width: 140px;
+  flex-shrink: 0;
+  text-align: right;
+  color: var(--text-secondary);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wb-sub-bar {
+  flex: 1;
+  height: 20px;
+  background: #F1F5F9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.wb-sub-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+.wb-sub-count {
+  width: 90px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Capability grid */
+.wb-cap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.wb-cap-grid .quest-status {
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+/* Actions bar */
+.wb-actions {
+  padding-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Empty state */
+.wb-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .wb-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .wb-upload-zone {
+    padding: 32px 16px;
+  }
+  .wb-sub-name {
+    width: 100px;
+  }
+  .wb-cap-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 1200px) {
+  .wb-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}

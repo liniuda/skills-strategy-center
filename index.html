@@ -24,8 +24,14 @@
     </button>
   </div>
   <nav class="sidebar-nav">
+    <div class="sidebar-group-label"><span class="sidebar-group-text">分析工作台</span></div>
+    <button class="sidebar-item nav-tab active" data-tab="workbench" title="分析工作台 - 上传会话数据分析拆解">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+      <span class="sidebar-label">分析工作台</span>
+    </button>
+
     <div class="sidebar-group-label"><span class="sidebar-group-text">数据洞察</span></div>
-    <button class="sidebar-item nav-tab active" data-tab="home" title="全景总览 - 平台数据概览">
+    <button class="sidebar-item nav-tab" data-tab="home" title="全景总览 - 平台数据概览">
       <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
       <span class="sidebar-label">全景总览</span>
     </button>
@@ -84,7 +90,8 @@
 
 <!-- 内容区 -->
 <main class="main-content">
-  <div id="sec-home" class="section active"></div>
+  <div id="sec-workbench" class="section active"></div>
+  <div id="sec-home" class="section"></div>
   <div id="sec-dashboard" class="section"></div>
   <div id="sec-cases" class="section"></div>
   <div id="sec-editor" class="section"></div>
@@ -101,10 +108,16 @@
   <div class="modal-overlay" id="taskModal">
     <div class="modal" id="taskModalContent"></div>
   </div>
+  <div class="modal-overlay" id="deployModal">
+    <div class="modal" id="deployModalContent"></div>
+  </div>
 </main>
 
 <!-- Toast 提示 -->
 <div class="toast" id="toast"></div>
+
+<!-- SheetJS (XLSX解析) -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
 <!-- 应用入口 (ES Module) -->
 <script type="module" src="js/app.js"></script>

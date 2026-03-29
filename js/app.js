@@ -22,6 +22,7 @@ import { renderMatrix } from './modules/matrix.js';
 import { renderMonitor } from './modules/monitor.js';
 import { renderArsenal } from './modules/arsenal.js';
 import { renderGraph } from './modules/graph.js';
+import { renderWorkbench } from './modules/workbench.js';
 import { requireAuth, renderUserMenu } from './auth.js';
 
 // 全局状态
@@ -127,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
       switchTab(this.dataset.tab, this);
       // 部分模块需要在切换时刷新
       const tabName = this.dataset.tab;
+      if (tabName === 'workbench') renderWorkbench();
       if (tabName === 'dashboard') renderDashboard(selectedSkillId, handleSkillSelect);
       if (tabName === 'kanban') renderKanban();
       if (tabName === 'monitor') renderMonitor();
@@ -140,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 渲染所有模块
+  renderWorkbench();
   renderHome(handleSkillClick);
   renderDashboard(selectedSkillId, handleSkillSelect);
   renderCases(handleCreateStrategy);
@@ -149,4 +152,16 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMonitor();
   renderArsenal();
   renderGraph();
+
+  // 暴露模块刷新函数，供工作台部署后刷新生产模块
+  window.sscRefreshModules = function () {
+    renderHome(handleSkillClick);
+    renderDashboard(selectedSkillId, handleSkillSelect);
+    renderCases(handleCreateStrategy);
+    renderEditor();
+    renderKanban();
+    renderMatrix();
+    renderMonitor();
+    renderArsenal();
+  };
 });
