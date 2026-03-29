@@ -168,7 +168,8 @@ function buildSVG(nodeMap) {
     const anchor = n.layer <= 1 ? 'start' : 'end';
     const displayName = n.name.length > 7 ? n.name.slice(0, 6) + '..' : n.name;
 
-    svg += `<g class="graph-node" data-node-id="${n.id}" style="animation-delay:${delay}s">
+    svg += `<g class="graph-node" data-node-id="${n.id}" style="transform-origin:${n.x}px ${n.y}px;animation-delay:${delay}s">
+      <circle cx="${n.x}" cy="${n.y}" r="${n.r + 10}" fill="transparent" pointer-events="all" class="graph-hit-area"/>
       <circle cx="${n.x}" cy="${n.y}" r="${n.r}" fill="${lc.color}" ${useFilter}
         stroke="rgba(255,255,255,0.25)" stroke-width="${n.pct >= 10 ? 1.5 : 0.5}"/>
       <text x="${labelX}" y="${n.y + 1}" text-anchor="${anchor}" dominant-baseline="middle"
@@ -242,6 +243,7 @@ export function renderGraph() {
   // build adjacency
   const adj = buildAdjacency();
   let activeNodeId = null;
+  let hoveredNodeId = null;
 
   // interaction
   const svgEl = document.querySelector('#graphSvgContainer svg');
@@ -253,6 +255,8 @@ export function renderGraph() {
     if (!g) return;
     const nid = g.dataset.nodeId;
     if (activeNodeId) return; // click mode active
+    if (hoveredNodeId === nid) return; // already hovering this node
+    hoveredNodeId = nid;
     highlightNode(nid, nodeMap, adj, svgEl);
     showTooltip(nid, e, nodeMap, adj, tooltipEl, wrapEl);
   });
@@ -264,9 +268,14 @@ export function renderGraph() {
   });
 
   svgEl.addEventListener('mouseout', (e) => {
+    if (activeNodeId) return;
     const g = e.target.closest('[data-node-id]');
-    if (!g || activeNodeId) return;
-    resetHighlight(svgEl);
+    if (!g) return;
+    // check if we're still within the same node group
+    const related = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('[data-node-id]') : null;
+    if (related && related.dataset.nodeId === g.dataset.nodeId) return;
+    hoveredNodeId = null;
+    resetHighlight(svgEl, nodeMap);
     tooltipEl.classList.remove('visible');
   });
 
@@ -276,18 +285,18 @@ export function renderGraph() {
       const nid = g.dataset.nodeId;
       if (activeNodeId === nid) {
         activeNodeId = null;
-        resetHighlight(svgEl);
+        resetHighlight(svgEl, nodeMap);
         tooltipEl.classList.remove('visible');
       } else {
         activeNodeId = nid;
         const pathNodes = findConnectedPath(nid, adj);
-        highlightPath(nid, pathNodes, svgEl);
+        highlightPath(nid, pathNodes, svgEl, nodeMap);
         showTooltip(nid, e, nodeMap, adj, tooltipEl, wrapEl);
       }
     } else {
       if (activeNodeId) {
         activeNodeId = null;
-        resetHighlight(svgEl);
+        resetHighlight(svgEl, nodeMap);
         tooltipEl.classList.remove('visible');
       }
     }
@@ -295,20 +304,38 @@ export function renderGraph() {
 }
 
 /* ── 高亮逻辑 ── */
+function scaleNodeRadius(g, nodeMap, factor) {
+  const id = g.dataset.nodeId;
+  const n = nodeMap[id];
+  if (!n) return;
+  const circle = g.querySelector('circle:not(.graph-hit-area)');
+  if (circle) circle.setAttribute('r', n.r * factor);
+}
+
+function resetNodeRadius(g, nodeMap) {
+  const id = g.dataset.nodeId;
+  const n = nodeMap[id];
+  if (!n) return;
+  const circle = g.querySelector('circle:not(.graph-hit-area)');
+  if (circle) circle.setAttribute('r', n.r);
+}
+
 function highlightNode(nid, nodeMap, adj, svgEl) {
   const connected = adj[nid];
-  // dim all nodes
   svgEl.querySelectorAll('.graph-node').forEach(g => {
     const id = g.dataset.nodeId;
     if (id === nid) {
       g.classList.add('graph-node-hover');
       g.classList.remove('graph-node-dimmed');
+      scaleNodeRadius(g, nodeMap, 1.35);
     } else if (connected.has(id)) {
       g.classList.add('graph-node-connected');
       g.classList.remove('graph-node-dimmed');
+      scaleNodeRadius(g, nodeMap, 1.12);
     } else {
       g.classList.add('graph-node-dimmed');
       g.classList.remove('graph-node-hover', 'graph-node-connected');
+      resetNodeRadius(g, nodeMap);
     }
   });
   // edges
@@ -331,18 +358,21 @@ function highlightNode(nid, nodeMap, adj, svgEl) {
   });
 }
 
-function highlightPath(nid, pathNodes, svgEl) {
+function highlightPath(nid, pathNodes, svgEl, nodeMap) {
   svgEl.querySelectorAll('.graph-node').forEach(g => {
     const id = g.dataset.nodeId;
     if (id === nid) {
       g.classList.add('graph-node-hover');
       g.classList.remove('graph-node-dimmed', 'graph-node-connected');
+      scaleNodeRadius(g, nodeMap, 1.35);
     } else if (pathNodes.has(id)) {
       g.classList.add('graph-node-connected');
       g.classList.remove('graph-node-dimmed', 'graph-node-hover');
+      scaleNodeRadius(g, nodeMap, 1.12);
     } else {
       g.classList.add('graph-node-dimmed');
       g.classList.remove('graph-node-hover', 'graph-node-connected');
+      resetNodeRadius(g, nodeMap);
     }
   });
   svgEl.querySelectorAll('.graph-edge').forEach(p => {
@@ -361,9 +391,10 @@ function highlightPath(nid, pathNodes, svgEl) {
   svgEl.querySelectorAll('.graph-glow').forEach(c => { c.style.opacity = '0.04'; });
 }
 
-function resetHighlight(svgEl) {
+function resetHighlight(svgEl, nodeMap) {
   svgEl.querySelectorAll('.graph-node').forEach(g => {
     g.classList.remove('graph-node-hover', 'graph-node-connected', 'graph-node-dimmed');
+    resetNodeRadius(g, nodeMap);
   });
   svgEl.querySelectorAll('.graph-edge').forEach(p => {
     p.style.opacity = '';
