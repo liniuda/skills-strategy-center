@@ -65,6 +65,10 @@
       <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
       <span class="sidebar-label">监控</span>
     </button>
+    <button class="sidebar-item nav-tab" data-tab="dialog" title="对话测试 - 模拟对话验证Skill匹配">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="sidebar-label">对话测试</span>
+    </button>
 
     <div class="sidebar-group-label"><span class="sidebar-group-text">能力保障</span></div>
     <button class="sidebar-item nav-tab" data-tab="matrix" title="能力矩阵 - 能力覆盖分析">
@@ -100,6 +104,7 @@
   <div id="sec-monitor" class="section"></div>
   <div id="sec-arsenal" class="section"></div>
   <div id="sec-graph" class="section"></div>
+  <div id="sec-dialog" class="section"></div>
 
   <!-- 模态框 -->
   <div class="modal-overlay" id="caseModal">
@@ -110,6 +115,9 @@
   </div>
   <div class="modal-overlay" id="deployModal">
     <div class="modal" id="deployModalContent"></div>
+  </div>
+  <div class="modal-overlay" id="skillModal">
+    <div class="modal" id="skillModalContent"></div>
   </div>
 </main>
 

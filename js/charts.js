@@ -128,19 +128,22 @@ export function renderDonutSVG(containerId, skillId) {
 /**
  * 能力热力图 - 能力 x Skill 覆盖矩阵
  * 关联：能力矩阵模块，展示能力覆盖情况
+ * 支持：hover 高亮行列 + tooltip + 点击交互
  */
 export function renderHeatmapSVG(containerId) {
   const caps = [...ALL_CAPABILITIES].sort((a, b) => b.skills.length - a.skills.length);
   const skills = [...REAL_SKILLS].sort((a, b) => b.primaryCount - a.primaryCount);
-  const LBL_W = 140, TOP_H = 80, CELL_W = 55, CELL_H = 26, GAP = 2;
+  const LBL_W = 140, TOP_H = 100, CELL_W = 70, CELL_H = 26, GAP = 2;
   const W = LBL_W + skills.length * (CELL_W + GAP) + 60;
   const H = TOP_H + caps.length * (CELL_H + GAP) + 40;
 
   let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  // 横轴 Skill 名（完整显示）
   skills.forEach((s, i) => {
     const x = LBL_W + i * (CELL_W + GAP) + CELL_W / 2;
-    svg += `<text x="${x}" y="${TOP_H - 8}" text-anchor="end" font-size="10" fill="var(--text-secondary)" font-weight="500" transform="rotate(-45,${x},${TOP_H - 8})">${s.icon} ${s.name.slice(0, 5)}</text>`;
+    svg += `<text x="${x}" y="${TOP_H - 8}" text-anchor="end" font-size="10" fill="var(--text-secondary)" font-weight="500" transform="rotate(-40,${x},${TOP_H - 8})" style="cursor:pointer;" data-heatmap-skill="${s.id}">${s.icon} ${s.name}</text>`;
   });
+  // 数据行
   caps.forEach((cap, ri) => {
     const y = TOP_H + ri * (CELL_H + GAP);
     svg += `<text x="${LBL_W - 8}" y="${y + CELL_H / 2 + 4}" text-anchor="end" font-size="10" fill="var(--text-secondary)">${cap.icon} ${cap.name}</text>`;
@@ -149,22 +152,66 @@ export function renderHeatmapSVG(containerId) {
       const has = cap.skills.includes(s.id);
       const fill = has ? (cap.skills.length >= 3 ? '#4F46E5' : '#818CF8') : '#F1F5F9';
       const opacity = has ? (cap.skills.length >= 3 ? 0.9 : 0.6) : 1;
-      svg += `<rect x="${x}" y="${y}" width="${CELL_W}" height="${CELL_H}" rx="4" fill="${fill}" opacity="${opacity}"><title>${cap.name} x ${s.name}: ${has ? '\u2705 已覆盖' : '\u274C 未覆盖'}</title></rect>`;
+      svg += `<rect x="${x}" y="${y}" width="${CELL_W}" height="${CELL_H}" rx="4" fill="${fill}" opacity="${opacity}" style="cursor:pointer;" data-heatmap-cell data-cap-name="${cap.name}" data-skill-name="${s.name}" data-skill-id="${s.id}" data-covered="${has}"></rect>`;
       if (has) svg += `<text x="${x + CELL_W / 2}" y="${y + CELL_H / 2 + 4}" text-anchor="middle" font-size="10" fill="#fff" pointer-events="none">\u2713</text>`;
     });
     svg += `<text x="${LBL_W + skills.length * (CELL_W + GAP) + 4}" y="${y + CELL_H / 2 + 4}" font-size="10" fill="var(--text-secondary)">${cap.skills.length}</text>`;
   });
+  // 底部汇总
   const sumY = TOP_H + caps.length * (CELL_H + GAP) + 4;
   skills.forEach((s, ci) => {
     const x = LBL_W + ci * (CELL_W + GAP) + CELL_W / 2;
     svg += `<text x="${x}" y="${sumY + 10}" text-anchor="middle" font-size="10" fill="var(--text-secondary)" font-weight="600">${s.capabilities.length}</text>`;
   });
+  // 图例
   const lgX = LBL_W, lgY = sumY + 24;
-  svg += `<rect x="${lgX}" y="${lgY}" width="16" height="12" rx="3" fill="#4F46E5" opacity="0.9"/><text x="${lgX + 20}" y="${lgY + 10}" font-size="10" fill="var(--text-secondary)">\u901A\u7528\u80FD\u529B(\u22653)</text>`;
-  svg += `<rect x="${lgX + 110}" y="${lgY}" width="16" height="12" rx="3" fill="#818CF8" opacity="0.6"/><text x="${lgX + 130}" y="${lgY + 10}" font-size="10" fill="var(--text-secondary)">\u4E13\u7528\u80FD\u529B(1-2)</text>`;
-  svg += `<rect x="${lgX + 230}" y="${lgY}" width="16" height="12" rx="3" fill="#F1F5F9"/><text x="${lgX + 250}" y="${lgY + 10}" font-size="10" fill="var(--text-secondary)">\u672A\u8986\u76D6</text>`;
+  svg += `<rect x="${lgX}" y="${lgY}" width="16" height="12" rx="3" fill="#4F46E5" opacity="0.9"/><text x="${lgX + 20}" y="${lgY + 10}" font-size="10" fill="var(--text-secondary)">\u8DE8\u573A\u666F\u901A\u7528\u80FD\u529B(\u22653)</text>`;
+  svg += `<rect x="${lgX + 140}" y="${lgY}" width="16" height="12" rx="3" fill="#818CF8" opacity="0.6"/><text x="${lgX + 160}" y="${lgY + 10}" font-size="10" fill="var(--text-secondary)">\u573A\u666F\u4E13\u5C5E\u80FD\u529B(1-2)</text>`;
+  svg += `<rect x="${lgX + 290}" y="${lgY}" width="16" height="12" rx="3" fill="#F1F5F9"/><text x="${lgX + 310}" y="${lgY + 10}" font-size="10" fill="var(--text-secondary)">\u672A\u8986\u76D6</text>`;
   svg += `</svg>`;
-  document.getElementById(containerId).innerHTML = svg;
+
+  const container = document.getElementById(containerId);
+  container.innerHTML = svg;
+
+  // 添加 tooltip DOM
+  let tooltip = container.querySelector('.heatmap-tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.className = 'heatmap-tooltip';
+    container.appendChild(tooltip);
+  }
+
+  // 绑定 hover 交互
+  container.querySelectorAll('[data-heatmap-cell]').forEach(cell => {
+    cell.addEventListener('mouseenter', (e) => {
+      const capName = cell.dataset.capName;
+      const skillName = cell.dataset.skillName;
+      const covered = cell.dataset.covered === 'true';
+      tooltip.innerHTML = `<strong>${capName}</strong> \u00D7 <strong>${skillName}</strong><br>${covered ? '\u2705 \u5DF2\u8986\u76D6' : '\u274C \u672A\u8986\u76D6\uFF0C\u70B9\u51FB\u8DF3\u8F6C\u6B66\u5668\u5E93'}`;
+      tooltip.classList.add('visible');
+      const rect = cell.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      tooltip.style.left = (rect.left - containerRect.left + rect.width / 2) + 'px';
+      tooltip.style.top = (rect.top - containerRect.top - 50) + 'px';
+    });
+    cell.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+    // 点击未覆盖 → 跳转武器库
+    cell.addEventListener('click', () => {
+      const covered = cell.dataset.covered === 'true';
+      if (!covered) {
+        if (window.sscSwitchTab) window.sscSwitchTab('arsenal');
+      }
+    });
+  });
+
+  // 点击横轴 Skill 名 → 跳转场景分析
+  container.querySelectorAll('[data-heatmap-skill]').forEach(el => {
+    el.addEventListener('click', () => {
+      if (window.sscSwitchTab) window.sscSwitchTab('dashboard');
+    });
+  });
 }
 
 /**

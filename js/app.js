@@ -23,6 +23,7 @@ import { renderMonitor } from './modules/monitor.js';
 import { renderArsenal } from './modules/arsenal.js';
 import { renderGraph } from './modules/graph.js';
 import { renderWorkbench } from './modules/workbench.js';
+import { renderDialog } from './modules/dialog.js';
 import { requireAuth, renderUserMenu } from './auth.js';
 
 // 全局状态
@@ -64,10 +65,14 @@ function handleSkillSelect(skillId) {
 }
 
 /**
- * 从案例库跳转到策略编辑器
+ * 从案例库跳转到策略编辑器（传递案例数据）
  */
-function handleCreateStrategy() {
+function handleCreateStrategy(caseData) {
+  if (caseData && window.sscState) {
+    window.sscState.fromCase = caseData;
+  }
   switchTab('editor');
+  renderEditor();
 }
 
 /**
@@ -116,6 +121,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // 认证守卫 - 未登录跳转到 login.html
   requireAuth();
 
+  // 全局状态 - 跨模块数据传递
+  window.sscState = {
+    fromCase: null,         // 案例库 → 编辑器：传递案例对象
+    editorDraft: null,      // 编辑器草稿持久化 (text + rule)
+    arsenalFilter: null,    // 矩阵 → 武器库：筛选条件
+  };
+  try {
+    const saved = JSON.parse(localStorage.getItem('ssc_state') || '{}');
+    if (saved.editorDraft) window.sscState.editorDraft = saved.editorDraft;
+  } catch (e) { /* ignore */ }
+
   // 初始化侧边栏
   initSidebar();
 
@@ -134,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tabName === 'monitor') renderMonitor();
       if (tabName === 'arsenal') renderArsenal();
       if (tabName === 'graph') renderGraph();
+      if (tabName === 'dialog') renderDialog();
       // 移动端: 切换 tab 后关闭抽屉
       if (window.innerWidth <= 768) {
         document.body.classList.remove('sidebar-open');
@@ -152,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMonitor();
   renderArsenal();
   renderGraph();
+  renderDialog();
 
   // 暴露模块刷新函数，供工作台部署后刷新生产模块
   window.sscRefreshModules = function () {
@@ -163,5 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderMatrix();
     renderMonitor();
     renderArsenal();
+    renderDialog();
   };
 });

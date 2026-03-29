@@ -93,7 +93,7 @@ function showCaseDetail(id, onCreateStrategy) {
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" id="closeCaseModalBtn">关闭</button>
-      <button class="btn btn-primary" id="createFromCase">基于此案例创建策略</button>
+      <button class="btn btn-primary" id="createFromCase">以此案例为参考，起草策略规则 \u2192</button>
     </div>`;
   modal.classList.add('show');
 
@@ -101,6 +101,7 @@ function showCaseDetail(id, onCreateStrategy) {
   document.getElementById('closeCaseModalBtn').addEventListener('click', () => modal.classList.remove('show'));
   document.getElementById('createFromCase').addEventListener('click', () => {
     modal.classList.remove('show');
-    if (onCreateStrategy) onCreateStrategy();
+    if (window.sscState) window.sscState.fromCase = c;
+    if (onCreateStrategy) onCreateStrategy(c);
   });
 }
