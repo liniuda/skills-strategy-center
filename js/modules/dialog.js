@@ -262,7 +262,7 @@ function analyzeAndMatch(text) {
       result.keywords.subScenario = subScores[0].hits;
     } else {
       // 默认取第一个子场景
-      result.matchedSubScenario = (result.matchedSkill.subScenarios || [])[0] || '\u672A\u8BC6\u522B';
+      result.matchedSubScenario = (result.matchedSkill.subScenarios || [])[0]?.name || '\u672A\u8BC6\u522B';
     }
   }
 
@@ -366,6 +366,7 @@ function isCapabilityInvoked(capId, text) {
     'QUERY_REFUND_PROGRESS': ['\u9000\u6B3E\u8FDB\u5EA6', '\u9000\u6B3E\u72B6\u6001'],
     'QUERY_ACCOUNT': ['\u8D26\u53F7', '\u767B\u5F55'],
     'MODIFY_ACCOUNT': ['\u4FEE\u6539\u5BC6\u7801', '\u4FEE\u6539\u8D26\u53F7'],
+    'SEARCH_KNOWLEDGE': ['知识', '检索', '搜索', '知识库', '查询知识', '帮助中心', '文档'],
   };
   const kws = triggers[capId] || [];
   return kws.some(kw => text.includes(kw));
@@ -450,6 +451,14 @@ const SKILL_REPLY_MAP = {
   },
   '申诉与复议': {
     _default: '如果对判责结果有异议的话，您可以发起申诉。申诉的时候需要提供新的证据材料来支持您的诉求，之前提交过的材料也会保留。',
+  },
+  '通用知识检索': {
+    _default: '关于您咨询的问题，小X这边已经从知识库中帮您检索到了相关信息，您可以参考一下。如果需要更详细的内容，可以告诉我具体想了解哪方面的。',
+    '向量语义检索': '已通过语义检索从知识库中召回了与您问题最相关的内容，匹配度较高的知识条目已经整理给您了。如果结果不够精确，您可以补充更多关键词帮助缩小范围。',
+    '知识库问答': '已在知识库中找到与您问题相关的解答，请查看以上内容。如果还有其他疑问，随时告诉我，我帮您继续查找。',
+    '多语言检索': '知识检索支持中文、英文、日语、韩语等18种语言，已根据您的语言偏好检索到相关内容。如需切换语言查看，请告知我目标语言。',
+    '类目知识召回': '已根据您指定的类目范围从知识库中召回了相关知识条目，您可以参考具体内容来处理问题。',
+    '帮助中心查询': '已从帮助中心找到与您问题相关的指南文档，请参考以上内容操作。如果操作过程中有疑问，随时联系我们。',
   },
 };
 

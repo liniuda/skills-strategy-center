@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 全局状态 - 跨模块数据传递
   window.sscState = {
     fromCase: null,         // 案例库 → 编辑器：传递案例对象
+    fromSk: null,           // 看板 sk → 编辑器：传递 sk 对象及父 Skill 信息
     editorDraft: null,      // 编辑器草稿持久化 (text + rule)
     arsenalFilter: null,    // 矩阵 → 武器库：筛选条件
   };

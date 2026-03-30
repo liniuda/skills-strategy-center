@@ -12,7 +12,7 @@ const CHART_COLORS = ['#4F46E5', '#7C3AED', '#3B82F6', '#059669', '#D97706', '#E
  */
 export function renderTreemapSVG(containerId, onSkillClick) {
   const sorted = [...REAL_SKILLS].sort((a, b) => b.primaryCount - a.primaryCount);
-  const W = 800, H = 380, GAP = 3;
+  const W = 800, H = 260, GAP = 3;
   const total = sorted.reduce((a, s) => a + s.primaryCount, 0);
   const rows = [[sorted[0]], [sorted[1], sorted[2], sorted[3], sorted[4]], [sorted[5], sorted[6], sorted[7], sorted[8], sorted[9]]];
   const rowTotals = rows.map(r => r.reduce((a, s) => a + s.primaryCount, 0));

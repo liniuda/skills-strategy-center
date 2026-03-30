@@ -751,8 +751,17 @@ function executeDeploy(id) {
     const totalAll = REAL_SKILLS.reduce((sum, s) => sum + s.primaryCount, 0);
     REAL_SKILLS.forEach(s => { s.primaryPct = parseFloat((s.primaryCount / totalAll * 100).toFixed(1)); });
     for (const sub of a.subScenarios) {
-      if (!skill.subScenarios.includes(sub.name)) {
-        skill.subScenarios.push(sub.name);
+      if (!skill.subScenarios.some(s => s.name === sub.name)) {
+        skill.subScenarios.push({
+          id: skill.id + '--' + sub.name,
+          name: sub.name,
+          status: 'draft',
+          version: 'v0.1.0',
+          ruleCount: 0,
+          capabilities: [...skill.capabilities],
+          primaryCount: 0,
+          primaryPct: sub.pct || 0,
+        });
       }
     }
     skill.ruleCount += a.draftRules.length;

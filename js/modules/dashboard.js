@@ -38,7 +38,7 @@ export function renderDashboard(selectedSkillId, onSkillSelect) {
           <span class="skill-detail-badge" style="background:#EEF2FF;color:var(--primary);">${sel.status} \u00B7 ${sel.version}</span>
         </div>
         <h4 style="font-size:13px;font-weight:600;margin:12px 0 8px;">子场景列表</h4>
-        <ul class="skill-sample-list">${sel.subScenarios.map((s, i) => `<li>${i + 1}. ${s}</li>`).join('')}</ul>
+        <ul class="skill-sample-list">${sel.subScenarios.map((s, i) => `<li>${i + 1}. ${s.name}</li>`).join('')}</ul>
       </div>
     </div>`;
   document.getElementById('sec-dashboard').innerHTML = html;

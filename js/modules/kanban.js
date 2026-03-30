@@ -1,321 +1,378 @@
 /**
- * 看板模块（列表模式）
- * 关联：REAL_SKILLS.status 管理生命周期（草稿→审核→灰度→发布→归档）
- * 状态变更影响监控模块
- * 支持：搜索、状态筛选、分页、卡片点击查看 Skill 策略详情弹窗
+ * 看板模块（二级页面）
+ * Level 1: Skill 文件夹概览（点击进入 Level 2）
+ * Level 2: sk (子场景) 列表 — 编辑/迁移/状态变更
  */
-import { REAL_SKILLS, SUB_SCENARIO_DATA, ALL_CAPABILITIES } from '../data/skills.js';
+import { REAL_SKILLS, SUB_SCENARIO_DATA, ALL_CAPABILITIES, moveSubScenario, getParentSkill } from '../data/skills.js';
 import { showToast } from '../utils.js';
 
-const STATUS_TABS = [
-  { key: 'all', label: '\u5168\u90E8' },
-  { key: 'draft', label: '\u{1F4DD} \u8349\u7A3F' },
-  { key: 'review', label: '\u{1F50D} \u5BA1\u6838\u4E2D' },
-  { key: 'canary', label: '\u{1F9EA} \u7070\u5EA6\u4E2D' },
-  { key: 'published', label: '\u2705 \u5DF2\u53D1\u5E03' },
-  { key: 'archived', label: '\u{1F4E6} \u5DF2\u5F52\u6863' },
-];
-
-const NEXT_ACTION = { draft: '\u63D0\u4EA4\u5BA1\u6838', review: '\u901A\u8FC7\u5BA1\u6838', canary: '\u5168\u91CF\u53D1\u5E03', published: '\u5F52\u6863', archived: '\u6062\u590D\u4E3A\u8349\u7A3F' };
+const STATUS_LABELS = { draft: '草稿', review: '审核中', canary: '灰度中', published: '已发布', archived: '已归档' };
+const STATUS_COLORS = { draft: '#64748B', review: '#D97706', canary: '#7C3AED', published: '#059669', archived: '#9CA3AF' };
+const NEXT_ACTION = { draft: '提交审核', review: '通过审核', canary: '全量发布', published: '归档', archived: '恢复为草稿' };
 const NEXT_STATUS = { draft: 'review', review: 'canary', canary: 'published', published: 'archived', archived: 'draft' };
 
-const STATUS_LABELS = { draft: '\u8349\u7A3F', review: '\u5BA1\u6838\u4E2D', canary: '\u7070\u5EA6\u4E2D', published: '\u5DF2\u53D1\u5E03', archived: '\u5DF2\u5F52\u6863' };
-const STATUS_COLORS = { draft: '#64748B', review: '#D97706', canary: '#7C3AED', published: '#059669', archived: '#9CA3AF' };
+const STATUS_TABS = [
+  { key: 'all', label: '全部' },
+  { key: 'draft', label: '草稿' },
+  { key: 'review', label: '审核中' },
+  { key: 'canary', label: '灰度中' },
+  { key: 'published', label: '已发布' },
+  { key: 'archived', label: '已归档' },
+];
 
-const PAGE_SIZE = 5;
-let currentFilter = 'all';
-let currentSearch = '';
-let currentPage = 1;
+const PAGE_SIZE = 8;
 
-function getFilteredSkills() {
-  let list = [...REAL_SKILLS];
-  if (currentFilter !== 'all') {
-    list = list.filter(s => s.status === currentFilter);
+// ========== 路由状态 ==========
+let currentSkillId = null;   // null=Level 1, string=Level 2
+let skFilter = 'all';
+let skSearch = '';
+let skPage = 1;
+
+// ========== 入口 ==========
+export function renderKanban() {
+  if (currentSkillId) {
+    renderSkLevel(currentSkillId);
+  } else {
+    renderSkillLevel();
   }
-  if (currentSearch.trim()) {
-    const q = currentSearch.trim().toLowerCase();
-    list = list.filter(s =>
-      s.name.toLowerCase().includes(q) ||
-      s.desc.toLowerCase().includes(q) ||
-      (s.subScenarios || []).some(sub => sub.toLowerCase().includes(q))
-    );
-  }
-  return list;
 }
 
-export function renderKanban() {
-  const filtered = getFilteredSkills();
+// ================================================================
+// Level 1: Skill 文件夹概览
+// ================================================================
+function renderSkillLevel() {
+  const cards = REAL_SKILLS.map(s => {
+    const skCount = (s.subScenarios || []).length;
+    const capCount = (s.capabilities || []).length;
+    const statusLabel = STATUS_LABELS[s.status] || s.status;
+    const statusColor = STATUS_COLORS[s.status] || '#64748B';
+    // 已发布 sk 占比
+    const publishedSk = (s.subScenarios || []).filter(sk => sk.status === 'published').length;
+    const pct = skCount > 0 ? Math.round(publishedSk / skCount * 100) : 0;
+    return `
+      <div class="kanban-folder-card" data-enter-skill="${s.id}" style="border-left-color:${s.color};">
+        <div class="kanban-folder-top">
+          <span class="kanban-folder-icon">${s.icon}</span>
+          <div>
+            <div class="kanban-folder-title">${s.name}</div>
+            <div class="kanban-folder-desc">${s.desc}</div>
+          </div>
+        </div>
+        <div class="kanban-folder-meta">
+          <span class="kanban-folder-tag" style="background:${statusColor}15;color:${statusColor};">${statusLabel}</span>
+          <span class="kanban-folder-tag" style="background:#F1F5F9;color:var(--text-secondary);">${s.version}</span>
+          <span class="kanban-folder-tag" style="background:#F1F5F9;color:var(--text-secondary);">${skCount} 个子场景</span>
+          <span class="kanban-folder-tag" style="background:#F1F5F9;color:var(--text-secondary);">${capCount} 项能力</span>
+          <span class="kanban-folder-tag" style="background:#F1F5F9;color:var(--text-secondary);">${s.primaryCount.toLocaleString()} 会话</span>
+        </div>
+        <div class="kanban-folder-bar">
+          <div class="kanban-folder-bar-fill" style="width:${pct}%;background:${s.color};"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">${publishedSk}/${skCount} 子场景已发布 (${pct}%)</div>
+      </div>`;
+  }).join('');
+
+  const html = `
+    <h1 class="section-title">策略看板</h1>
+    <p class="section-desc">管理所有 Skill 及其子场景的生命周期 <button class="module-nav-link" id="kanbanToMonitor">查看监控效果 →</button></p>
+    <div class="kanban-folder-grid">${cards}</div>`;
+
+  document.getElementById('sec-kanban').innerHTML = html;
+
+  // 绑定事件
+  document.getElementById('kanbanToMonitor').addEventListener('click', () => {
+    if (window.sscSwitchTab) window.sscSwitchTab('monitor');
+  });
+  document.querySelectorAll('[data-enter-skill]').forEach(card => {
+    card.addEventListener('click', () => {
+      currentSkillId = card.dataset.enterSkill;
+      skFilter = 'all';
+      skSearch = '';
+      skPage = 1;
+      renderKanban();
+    });
+  });
+}
+
+// ================================================================
+// Level 2: sk 列表
+// ================================================================
+function renderSkLevel(skillId) {
+  const skill = REAL_SKILLS.find(s => s.id === skillId);
+  if (!skill) { currentSkillId = null; renderSkillLevel(); return; }
+
+  const allSks = skill.subScenarios || [];
+
+  // 筛选
+  let filtered = [...allSks];
+  if (skFilter !== 'all') {
+    filtered = filtered.filter(sk => sk.status === skFilter);
+  }
+  if (skSearch.trim()) {
+    const q = skSearch.trim().toLowerCase();
+    filtered = filtered.filter(sk => sk.name.toLowerCase().includes(q));
+  }
+
+  // 分页
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  if (currentPage > totalPages) currentPage = totalPages;
-  const pageSkills = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  if (skPage > totalPages) skPage = totalPages;
+  const pageSks = filtered.slice((skPage - 1) * PAGE_SIZE, skPage * PAGE_SIZE);
 
   // 状态统计
   const statusCounts = {};
-  REAL_SKILLS.forEach(s => { statusCounts[s.status] = (statusCounts[s.status] || 0) + 1; });
+  allSks.forEach(sk => { statusCounts[sk.status] = (statusCounts[sk.status] || 0) + 1; });
 
-  // 状态筛选 tabs
+  // 面包屑
+  const breadcrumbHtml = `
+    <div class="kanban-breadcrumb">
+      <button class="kanban-breadcrumb-link" id="kanbanBack">策略看板</button>
+      <span class="kanban-breadcrumb-sep">›</span>
+      <span class="kanban-breadcrumb-current">${skill.icon} ${skill.name}</span>
+    </div>`;
+
+  // 状态 tabs
   const tabsHtml = STATUS_TABS.map(t => {
-    const count = t.key === 'all' ? REAL_SKILLS.length : (statusCounts[t.key] || 0);
-    const active = currentFilter === t.key ? ' kanban-tab-active' : '';
-    return `<button class="kanban-tab${active}" data-filter="${t.key}">${t.label}<span class="kanban-tab-count">${count}</span></button>`;
+    const count = t.key === 'all' ? allSks.length : (statusCounts[t.key] || 0);
+    const active = skFilter === t.key ? ' kanban-tab-active' : '';
+    return `<button class="kanban-tab${active}" data-sk-filter="${t.key}">${t.label}<span class="kanban-tab-count">${count}</span></button>`;
   }).join('');
 
-  // 列表行
-  const rowsHtml = pageSkills.length > 0
-    ? pageSkills.map(s => {
-      const statusLabel = STATUS_LABELS[s.status] || s.status;
-      const statusColor = STATUS_COLORS[s.status] || '#64748B';
-      const subCount = (s.subScenarios || []).length;
-      const capCount = (s.capabilities || []).length;
+  // sk 行
+  const rowsHtml = pageSks.length > 0
+    ? pageSks.map(sk => {
+      const statusLabel = STATUS_LABELS[sk.status] || sk.status;
+      const statusColor = STATUS_COLORS[sk.status] || '#64748B';
+      const capCount = (sk.capabilities || []).length;
       return `
-        <div class="kanban-list-row" data-skill-id="${s.id}">
+        <div class="kanban-list-row" data-sk-id="${sk.id}">
           <div class="kanban-list-cell kanban-list-name">
-            <span class="kanban-list-icon">${s.icon}</span>
             <div>
-              <div class="kanban-list-title">${s.name}</div>
-              <div class="kanban-list-desc">${s.desc}</div>
+              <div class="kanban-list-title">${sk.name}</div>
+              <div class="kanban-list-desc">ID: ${sk.id}</div>
             </div>
           </div>
           <div class="kanban-list-cell kanban-list-status">
             <span class="kanban-status-badge" style="background:${statusColor}15;color:${statusColor};border:1px solid ${statusColor}30;">${statusLabel}</span>
           </div>
+          <div class="kanban-list-cell kanban-list-meta">${sk.version}</div>
+          <div class="kanban-list-cell kanban-list-meta" style="color:${skill.color};font-weight:500;">${sk.primaryCount.toLocaleString()}</div>
+          <div class="kanban-list-cell kanban-list-meta">${sk.ruleCount} 条</div>
           <div class="kanban-list-cell kanban-list-meta">
-            <span title="\u7248\u672C">${s.version}</span>
+            <div class="kanban-mini-bar"><div class="kanban-mini-bar-fill" style="width:${sk.primaryPct}%;background:${skill.color};"></div></div>
+            <span style="font-size:11px;margin-left:4px;">${sk.primaryPct}%</span>
           </div>
-          <div class="kanban-list-cell kanban-list-meta">
-            <span title="\u4F1A\u8BDD\u6570" style="color:${s.color};font-weight:500;">${s.primaryCount.toLocaleString()}</span>
-          </div>
-          <div class="kanban-list-cell kanban-list-meta">
-            <span title="\u89C4\u5219\u6570">${s.ruleCount} \u6761</span>
-          </div>
-          <div class="kanban-list-cell kanban-list-meta">
-            <span title="\u5B50\u573A\u666F">${subCount} \u4E2A</span>
-          </div>
-          <div class="kanban-list-cell kanban-list-meta">
-            <span title="\u80FD\u529B">${capCount} \u9879</span>
-          </div>
-          <div class="kanban-list-cell kanban-list-actions">
-            <button class="kanban-action-btn kanban-action-move" data-move-skill="${s.id}" data-move-to="${NEXT_STATUS[s.status]}" title="${NEXT_ACTION[s.status]}">${NEXT_ACTION[s.status]}</button>
-            <button class="kanban-action-btn kanban-action-edit" data-edit-skill="${s.id}" title="\u7F16\u8F91\u7B56\u7565">\u{1F4DD}</button>
+          <div class="kanban-list-cell kanban-list-meta">${capCount} 项</div>
+          <div class="kanban-list-cell kanban-sk-actions">
+            <button class="kanban-sk-btn kanban-sk-btn-status" data-sk-move="${sk.id}" data-move-to="${NEXT_STATUS[sk.status]}" title="${NEXT_ACTION[sk.status]}">${NEXT_ACTION[sk.status]}</button>
+            <button class="kanban-sk-btn kanban-sk-btn-edit" data-sk-edit="${sk.id}" title="编辑策略">编辑</button>
+            <button class="kanban-sk-btn kanban-sk-btn-migrate" data-sk-migrate="${sk.id}" title="迁移到其他 Skill">迁移</button>
           </div>
         </div>`;
     }).join('')
-    : `<div class="kanban-list-empty">\u{1F50D} \u672A\u627E\u5230\u5339\u914D\u7684\u7B56\u7565</div>`;
+    : '<div class="kanban-list-empty">未找到匹配的子场景</div>';
 
   // 分页
   let paginationHtml = '';
   if (totalPages > 1) {
     const pages = [];
     for (let i = 1; i <= totalPages; i++) {
-      const active = i === currentPage ? ' kanban-page-active' : '';
-      pages.push(`<button class="kanban-page-btn${active}" data-page="${i}">${i}</button>`);
+      const active = i === skPage ? ' kanban-page-active' : '';
+      pages.push(`<button class="kanban-page-btn${active}" data-sk-page="${i}">${i}</button>`);
     }
     paginationHtml = `
       <div class="kanban-pagination">
-        <button class="kanban-page-btn" data-page="${Math.max(1, currentPage - 1)}" ${currentPage === 1 ? 'disabled' : ''}>\u2190</button>
+        <button class="kanban-page-btn" data-sk-page="${Math.max(1, skPage - 1)}" ${skPage === 1 ? 'disabled' : ''}>←</button>
         ${pages.join('')}
-        <button class="kanban-page-btn" data-page="${Math.min(totalPages, currentPage + 1)}" ${currentPage === totalPages ? 'disabled' : ''}>\u2192</button>
-        <span class="kanban-page-info">\u5171 ${filtered.length} \u6761\uFF0C${currentPage}/${totalPages} \u9875</span>
+        <button class="kanban-page-btn" data-sk-page="${Math.min(totalPages, skPage + 1)}" ${skPage === totalPages ? 'disabled' : ''}>→</button>
+        <span class="kanban-page-info">共 ${filtered.length} 条，${skPage}/${totalPages} 页</span>
       </div>`;
   } else {
-    paginationHtml = `<div class="kanban-pagination"><span class="kanban-page-info">\u5171 ${filtered.length} \u6761</span></div>`;
+    paginationHtml = `<div class="kanban-pagination"><span class="kanban-page-info">共 ${filtered.length} 条</span></div>`;
   }
 
   const html = `
-    <h1 class="section-title">\u7B56\u7565\u770B\u677F</h1>
-    <p class="section-desc">\u7BA1\u7406\u6240\u6709 Skill \u7B56\u7565\u7684\u751F\u547D\u5468\u671F\u72B6\u6001 <button class="module-nav-link" id="kanbanToMonitor">\u67E5\u770B\u76D1\u63A7\u6548\u679C \u2192</button></p>
+    ${breadcrumbHtml}
+    <h1 class="section-title">${skill.icon} ${skill.name} <span style="font-size:14px;font-weight:400;color:var(--text-secondary);">— 子场景管理</span></h1>
+    <p class="section-desc">${skill.desc} · ${skill.version} · ${skill.primaryCount.toLocaleString()} 会话 · ${skill.ruleCount} 条规则</p>
     <div class="kanban-toolbar">
       <div class="kanban-tabs">${tabsHtml}</div>
       <div class="kanban-search-wrap">
-        <input type="text" class="kanban-search" id="kanbanSearch" placeholder="\u641C\u7D22\u7B56\u7565\u540D\u79F0\u3001\u63CF\u8FF0\u6216\u5B50\u573A\u666F..." value="${escHtml(currentSearch)}">
+        <input type="text" class="kanban-search" id="skSearch" placeholder="搜索子场景名称..." value="${escHtml(skSearch)}">
       </div>
     </div>
     <div class="kanban-list">
       <div class="kanban-list-header">
-        <div class="kanban-list-cell kanban-list-name">\u7B56\u7565\u540D\u79F0</div>
-        <div class="kanban-list-cell kanban-list-status">\u72B6\u6001</div>
-        <div class="kanban-list-cell kanban-list-meta">\u7248\u672C</div>
-        <div class="kanban-list-cell kanban-list-meta">\u4F1A\u8BDD\u6570</div>
-        <div class="kanban-list-cell kanban-list-meta">\u89C4\u5219</div>
-        <div class="kanban-list-cell kanban-list-meta">\u5B50\u573A\u666F</div>
-        <div class="kanban-list-cell kanban-list-meta">\u80FD\u529B</div>
-        <div class="kanban-list-cell kanban-list-actions">\u64CD\u4F5C</div>
+        <div class="kanban-list-cell kanban-list-name">子场景</div>
+        <div class="kanban-list-cell kanban-list-status">状态</div>
+        <div class="kanban-list-cell kanban-list-meta">版本</div>
+        <div class="kanban-list-cell kanban-list-meta">会话数</div>
+        <div class="kanban-list-cell kanban-list-meta">规则</div>
+        <div class="kanban-list-cell kanban-list-meta">占比</div>
+        <div class="kanban-list-cell kanban-list-meta">能力</div>
+        <div class="kanban-list-cell kanban-sk-actions">操作</div>
       </div>
       ${rowsHtml}
     </div>
     ${paginationHtml}`;
 
   document.getElementById('sec-kanban').innerHTML = html;
-
-  // 绑定事件
-  bindKanbanEvents();
+  bindSkLevelEvents(skillId);
 }
 
-function bindKanbanEvents() {
-  // 跳转到监控
-  document.getElementById('kanbanToMonitor').addEventListener('click', () => {
-    if (window.sscSwitchTab) window.sscSwitchTab('monitor');
+// ================================================================
+// Level 2 事件绑定
+// ================================================================
+function bindSkLevelEvents(skillId) {
+  // 返回 Level 1
+  document.getElementById('kanbanBack').addEventListener('click', () => {
+    currentSkillId = null;
+    renderKanban();
   });
 
   // 状态筛选
-  document.querySelectorAll('.kanban-tab').forEach(btn => {
+  document.querySelectorAll('[data-sk-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
-      currentFilter = btn.dataset.filter;
-      currentPage = 1;
+      skFilter = btn.dataset.skFilter;
+      skPage = 1;
       renderKanban();
     });
   });
 
   // 搜索
-  const searchInput = document.getElementById('kanbanSearch');
+  const searchInput = document.getElementById('skSearch');
   let searchTimer = null;
   searchInput.addEventListener('input', () => {
     if (searchTimer) clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
-      currentSearch = searchInput.value;
-      currentPage = 1;
+      skSearch = searchInput.value;
+      skPage = 1;
       renderKanban();
-      // 重新聚焦并恢复光标位置
-      const newInput = document.getElementById('kanbanSearch');
+      const newInput = document.getElementById('skSearch');
       if (newInput) { newInput.focus(); newInput.setSelectionRange(newInput.value.length, newInput.value.length); }
     }, 300);
   });
 
   // 分页
-  document.querySelectorAll('.kanban-page-btn[data-page]').forEach(btn => {
+  document.querySelectorAll('[data-sk-page]').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.disabled) return;
-      currentPage = parseInt(btn.dataset.page);
+      skPage = parseInt(btn.dataset.skPage);
       renderKanban();
     });
   });
 
-  // 行点击查看详情
-  document.querySelectorAll('.kanban-list-row[data-skill-id]').forEach(row => {
-    row.addEventListener('click', (e) => {
-      if (e.target.closest('.kanban-action-btn')) return;
-      showSkillDetail(row.dataset.skillId);
+  // sk 状态变更
+  document.querySelectorAll('[data-sk-move]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const skId = btn.dataset.skMove;
+      const newStatus = btn.dataset.moveTo;
+      const skill = REAL_SKILLS.find(s => s.id === skillId);
+      if (!skill) return;
+      const sk = skill.subScenarios.find(s => s.id === skId);
+      if (!sk) return;
+      sk.status = newStatus;
+      renderKanban();
+      showToast(`[${sk.name}] 已移至 ${STATUS_LABELS[newStatus] || newStatus}`);
     });
   });
 
-  // 状态流转按钮
-  document.querySelectorAll('[data-move-skill]').forEach(btn => {
+  // sk 编辑 → 跳转编辑器
+  document.querySelectorAll('[data-sk-edit]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      moveSkillStatus(btn.dataset.moveSkill, btn.dataset.moveTo);
-    });
-  });
-
-  // 编辑按钮（直接跳转编辑器）
-  document.querySelectorAll('[data-edit-skill]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const s = REAL_SKILLS.find(x => x.id === btn.dataset.editSkill);
-      if (!s) return;
-      const caps = (s.capabilities || []).map(cId => ALL_CAPABILITIES.find(c => c.id === cId)).filter(Boolean);
+      const skId = btn.dataset.skEdit;
+      const skill = REAL_SKILLS.find(s => s.id === skillId);
+      if (!skill) return;
+      const sk = skill.subScenarios.find(s => s.id === skId);
+      if (!sk) return;
+      const caps = (sk.capabilities || []).map(cId => ALL_CAPABILITIES.find(c => c.id === cId)).filter(Boolean);
       if (window.sscState) {
-        window.sscState.fromSkill = {
-          id: s.id,
-          name: s.name,
-          icon: s.icon,
-          desc: s.desc,
-          status: s.status,
-          version: s.version,
-          ruleCount: s.ruleCount,
-          subScenarios: s.subScenarios || [],
+        window.sscState.fromSk = {
+          skId: sk.id,
+          skName: sk.name,
+          skillId: skill.id,
+          skillName: skill.name,
+          skillIcon: skill.icon,
+          status: sk.status,
+          version: sk.version,
+          ruleCount: sk.ruleCount,
           capabilities: caps.map(c => c.name),
+          primaryCount: sk.primaryCount,
+          primaryPct: sk.primaryPct,
         };
       }
       if (window.sscSwitchTab) window.sscSwitchTab('editor');
     });
   });
+
+  // sk 迁移 → 打开迁移弹窗
+  document.querySelectorAll('[data-sk-migrate]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openMigrateModal(btn.dataset.skMigrate, skillId);
+    });
+  });
 }
 
-function moveSkillStatus(id, newStatus) {
-  const skill = REAL_SKILLS.find(s => s.id === id);
-  if (!skill) return;
-  skill.status = newStatus;
-  renderKanban();
-  showToast(`[${skill.name}] \u5DF2\u79FB\u81F3 ${STATUS_LABELS[newStatus] || newStatus}`);
-}
+// ================================================================
+// 迁移弹窗
+// ================================================================
+function openMigrateModal(skId, sourceSkillId) {
+  const sourceSkill = REAL_SKILLS.find(s => s.id === sourceSkillId);
+  if (!sourceSkill) return;
+  const sk = sourceSkill.subScenarios.find(s => s.id === skId);
+  if (!sk) return;
 
-/**
- * 显示 Skill 策略详情弹窗
- */
-function showSkillDetail(skillId) {
-  const s = REAL_SKILLS.find(x => x.id === skillId);
-  if (!s) return;
+  const modal = document.getElementById('migrateModal');
+  const options = REAL_SKILLS
+    .filter(s => s.id !== sourceSkillId)
+    .map(s => `<option value="${s.id}">${s.icon} ${s.name} (${(s.subScenarios || []).length} 个子场景)</option>`)
+    .join('');
 
-  const modal = document.getElementById('skillModal');
-  const subData = SUB_SCENARIO_DATA[skillId] || [];
-  const caps = (s.capabilities || []).map(cId => ALL_CAPABILITIES.find(c => c.id === cId)).filter(Boolean);
-
-  const statusLabel = STATUS_LABELS[s.status] || s.status;
-  const statusColor = STATUS_COLORS[s.status] || '#64748B';
-
-  // 子场景进度条
-  const subHtml = subData.length > 0
-    ? subData.map(d => `
-      <div class="bar-item">
-        <div class="bar-label">${d.name}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${d.pct * 2}%;background:${s.color};">${d.pct}%</div></div>
-      </div>`).join('')
-    : '<div style="color:var(--text-secondary);font-size:12px;">\u6682\u65E0\u5B50\u573A\u666F\u6570\u636E</div>';
-
-  // 能力标签
-  const capsHtml = caps.length > 0
-    ? caps.map(c => `<span class="modal-tag" style="background:${s.color}15;color:${s.color};">${c.icon} ${c.name}</span>`).join(' ')
-    : '<span style="color:var(--text-secondary);font-size:12px;">\u6682\u65E0\u80FD\u529B\u914D\u7F6E</span>';
-
-  document.getElementById('skillModalContent').innerHTML = `
+  document.getElementById('migrateModalContent').innerHTML = `
     <div class="modal-header">
-      <h3>${s.icon} ${s.name}</h3>
-      <button class="modal-close" id="closeSkillModal">&times;</button>
+      <h3>迁移子场景</h3>
+      <button class="modal-close" id="closeMigrateModal">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="modal-field" style="display:flex;gap:8px;align-items:center;margin-bottom:16px;">
-        <span class="modal-tag" style="background:${statusColor}18;color:${statusColor};">${statusLabel}</span>
-        <span class="modal-tag" style="background:#F1F5F9;color:var(--text-secondary);">${s.version}</span>
-        <span style="font-size:12px;color:var(--text-secondary);">${s.primaryCount.toLocaleString()} \u4F1A\u8BDD \u00B7 ${s.ruleCount} \u6761\u89C4\u5219</span>
+      <div class="migrate-preview">
+        将 <strong>${sk.name}</strong> 从 <strong>${sourceSkill.icon} ${sourceSkill.name}</strong> 迁移到目标 Skill。
+        迁移后，该子场景的能力配置将跟随迁移到目标 Skill。
       </div>
-      <div class="modal-field">
-        <div class="field-label">\u7B56\u7565\u63CF\u8FF0</div>
-        <div class="field-value">${s.desc}</div>
-      </div>
-      <div class="modal-field">
-        <div class="field-label">\u5B50\u573A\u666F\u5206\u5E03 (${subData.length} \u4E2A\u5B50\u573A\u666F)</div>
-        <div class="field-value"><div class="bar-chart">${subHtml}</div></div>
-      </div>
-      <div class="modal-field">
-        <div class="field-label">\u8C03\u7528\u80FD\u529B (${caps.length} \u9879)</div>
-        <div class="field-value">${capsHtml}</div>
+      <div class="migrate-form">
+        <div class="migrate-field" style="margin-top:16px;">
+          <label>目标 Skill</label>
+          <select class="migrate-select" id="migrateTarget">${options}</select>
+        </div>
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" id="closeSkillModalBtn">\u5173\u95ED</button>
-      <button class="btn btn-primary" id="editSkillStrategy">\u{1F4DD} \u7F16\u8F91\u7B56\u7565</button>
+      <button class="btn btn-secondary" id="cancelMigrate">取消</button>
+      <button class="btn btn-primary" id="confirmMigrate">确认迁移</button>
     </div>`;
+
   modal.classList.add('show');
 
-  document.getElementById('closeSkillModal').addEventListener('click', () => modal.classList.remove('show'));
-  document.getElementById('closeSkillModalBtn').addEventListener('click', () => modal.classList.remove('show'));
-  document.getElementById('editSkillStrategy').addEventListener('click', () => {
+  document.getElementById('closeMigrateModal').addEventListener('click', () => modal.classList.remove('show'));
+  document.getElementById('cancelMigrate').addEventListener('click', () => modal.classList.remove('show'));
+  document.getElementById('confirmMigrate').addEventListener('click', () => {
+    const targetId = document.getElementById('migrateTarget').value;
+    if (!targetId) { showToast('请选择目标 Skill', 'warning'); return; }
+    const ok = moveSubScenario(skId, targetId);
     modal.classList.remove('show');
-    // 将 Skill 数据传入编辑器
-    if (window.sscState) {
-      window.sscState.fromSkill = {
-        id: s.id,
-        name: s.name,
-        icon: s.icon,
-        desc: s.desc,
-        status: s.status,
-        version: s.version,
-        ruleCount: s.ruleCount,
-        subScenarios: s.subScenarios || [],
-        capabilities: caps.map(c => c.name),
-      };
+    if (ok) {
+      const targetSkill = REAL_SKILLS.find(s => s.id === targetId);
+      showToast(`[${sk.name}] 已迁移到 ${targetSkill ? targetSkill.name : targetId}`);
+      // 如果源 Skill 没有 sk 了，返回 Level 1
+      const src = REAL_SKILLS.find(s => s.id === sourceSkillId);
+      if (!src || (src.subScenarios || []).length === 0) {
+        currentSkillId = null;
+      }
+      renderKanban();
+    } else {
+      showToast('迁移失败', 'warning');
     }
-    if (window.sscSwitchTab) window.sscSwitchTab('editor');
   });
 }
 

@@ -13,7 +13,8 @@ let currentRule = null;
 let flowchartTimer = null;
 
 export function renderEditor() {
-  // 检查上下文来源：Skill 编辑 > 案例引用 > 草稿恢复
+  // 检查上下文来源：sk 编辑 > Skill 编辑 > 案例引用 > 草稿恢复
+  const fromSk = (window.sscState && window.sscState.fromSk) || null;
   const fromCase = (window.sscState && window.sscState.fromCase) || null;
   const fromSkill = (window.sscState && window.sscState.fromSkill) || null;
   const draft = (window.sscState && window.sscState.editorDraft) || null;
@@ -21,9 +22,20 @@ export function renderEditor() {
   let initialText = NL_TEMPLATES[0].text;
   let contextRefHtml = '';
 
-  if (fromSkill) {
+  if (fromSk) {
+    // 从看板 sk 编辑
+    const caps = fromSk.capabilities.length > 0 ? fromSk.capabilities.join('\u3001') : '\u7CFB\u7EDF\u80FD\u529B';
+    initialText = `\u5F53${fromSk.skillName} \u2192 ${fromSk.skName}\u573A\u666F\u4E0B\uFF0C\u9700\u8981\u8C03\u7528${caps}\u7B49\u80FD\u529B\u8FDB\u884C\u5904\u7406\u3002\u9488\u5BF9\u8BE5\u5B50\u573A\u666F\u7684${fromSk.ruleCount}\u6761\u89C4\u5219\u8FDB\u884C\u7B56\u7565\u4F18\u5316\u3002`;
+    contextRefHtml = `
+      <div class="editor-case-ref" id="caseRef">
+        <span class="editor-case-ref-icon">${fromSk.skillIcon}</span>
+        <span class="editor-case-ref-text">\u7F16\u8F91\u5B50\u573A\u666F\uFF1A${fromSk.skillName} \u203A ${fromSk.skName} / ${fromSk.version} / ${fromSk.ruleCount} \u6761\u89C4\u5219 / ${fromSk.primaryCount} \u4F1A\u8BDD (${fromSk.primaryPct}%)</span>
+        <button class="editor-case-ref-close" id="removeCaseRef" title="\u79FB\u9664\u5F15\u7528">\u00D7</button>
+      </div>`;
+    window.sscState.fromSk = null;
+  } else if (fromSkill) {
     // 从看板 Skill 生成策略描述文本
-    const scenarios = fromSkill.subScenarios.length > 0 ? fromSkill.subScenarios.join('\u3001') : '\u76F8\u5173\u573A\u666F';
+    const scenarios = fromSkill.subScenarios.length > 0 ? fromSkill.subScenarios.map(s => typeof s === 'string' ? s : s.name).join('\u3001') : '\u76F8\u5173\u573A\u666F';
     const caps = fromSkill.capabilities.length > 0 ? fromSkill.capabilities.join('\u3001') : '\u7CFB\u7EDF\u80FD\u529B';
     initialText = `\u5F53${fromSkill.name}\u573A\u666F\u4E0B\uFF0C\u6D89\u53CA${scenarios}\u7B49\u5B50\u573A\u666F\u65F6\uFF0C\u9700\u8981\u8C03\u7528${caps}\u7B49\u80FD\u529B\u8FDB\u884C\u5904\u7406\u3002${fromSkill.desc}`;
     contextRefHtml = `
@@ -95,7 +107,7 @@ export function renderEditor() {
   }
 
   // 如果有草稿且有已解析规则，恢复显示
-  if (draft && draft.rule && !fromCase && !fromSkill) {
+  if (draft && draft.rule && !fromSk && !fromCase && !fromSkill) {
     currentRule = draft.rule;
     renderEditableRules(draft.rule);
     renderConflicts(draft.rule);

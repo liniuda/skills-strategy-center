@@ -130,6 +130,17 @@ export const SKILL_KEYWORD_MAP = {
       '\u5730\u5740\u4E0E\u6E05\u5173': ['\u6258\u7BA1\u6E05\u5173', '\u6258\u7BA1\u5730\u5740'],
     },
   },
+  'knowledge-search': {
+    primaryKeywords: ['知识', '检索', '搜索', '知识库', '查询知识', '知识召回', '向量检索', '语义搜索'],
+    secondaryKeywords: ['帮助中心', '文档', '问答', 'FAQ', '百科', '指南'],
+    subScenarioKeywords: {
+      '向量语义检索': ['向量', '语义', '相似度', '召回', 'embedding'],
+      '知识库问答': ['知识库', '知识问答', '知识查询', '找知识'],
+      '多语言检索': ['多语言', '英文', '翻译', '日语', '韩语', '阿拉伯语', '法语', '德语', '西班牙语'],
+      '类目知识召回': ['类目', '分类检索', '类目知识', '品类'],
+      '帮助中心查询': ['帮助中心', 'help center', '帮助文档', '使用指南'],
+    },
+  },
 };
 
 /**
@@ -235,6 +246,7 @@ export const CAPABILITY_DESCRIPTIONS = {
   'SUBMIT_EVIDENCE': '\u4EE3\u4E3A\u63D0\u4EA4\u4E3E\u8BC1\u6750\u6599\uFF0C\u5C06\u8BC1\u636E\u6587\u4EF6\u4E0A\u4F20\u81F3\u7EA0\u7EB7\u7CFB\u7EDF',
   'QUERY_REFUND_PROGRESS': '\u67E5\u8BE2\u9000\u6B3E\u8FDB\u5EA6\uFF0C\u83B7\u53D6\u9000\u6B3E\u72B6\u6001/\u94F6\u884C\u5904\u7406\u8FDB\u5EA6',
   'TRANSFER_SPECIALIST': '\u8F6C\u63A5\u4E13\u5C5E\u5C0F\u4E8C\uFF0C\u7531\u7EA0\u7EB7\u4E13\u5458\u8FDB\u884C\u4E13\u4E1A\u5904\u7406',
+  'SEARCH_KNOWLEDGE': '\u8C03\u7528BotSearchProxyService#searchChunk\u5411\u91CF\u68C0\u7D22\u63A5\u53E3\uFF0C\u6839\u636E\u5173\u952E\u8BCD\u5728\u77E5\u8BC6\u5E93\u4E2D\u8FDB\u884C\u8BED\u4E49\u53EC\u56DE\uFF0C\u652F\u630118\u79CD\u8BED\u8A00\u548C\u591A\u7EC8\u7AEF\u573A\u666F',
 };
 
 /**
