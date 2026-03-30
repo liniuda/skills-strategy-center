@@ -80,6 +80,12 @@
       <span class="sidebar-label">武器库</span>
       <span class="sidebar-badge nav-badge" title="18个能力缺口">18</span>
     </button>
+
+    <div class="sidebar-group-label"><span class="sidebar-group-text">平台配置</span></div>
+    <button class="sidebar-item nav-tab" data-tab="mcp" title="MCP 服务 - 外部工具协议配置管理">
+      <span class="sidebar-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6"/><circle cx="12" cy="12" r="4"/><path d="M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24"/><path d="M19.07 4.93l-4.24 4.24m-5.66 5.66l-4.24 4.24"/></svg></span>
+      <span class="sidebar-label">MCP 服务</span>
+    </button>
   </nav>
   <div class="sidebar-footer nav-user" id="navUser"></div>
 </aside>
@@ -105,6 +111,7 @@
   <div id="sec-arsenal" class="section"></div>
   <div id="sec-graph" class="section"></div>
   <div id="sec-dialog" class="section"></div>
+  <div id="sec-mcp" class="section"></div>
 
   <!-- 模态框 -->
   <div class="modal-overlay" id="caseModal">
@@ -121,6 +128,9 @@
   </div>
   <div class="modal-overlay" id="migrateModal">
     <div class="modal" id="migrateModalContent"></div>
+  </div>
+  <div class="modal-overlay" id="mcpModal">
+    <div class="modal" id="mcpModalContent"></div>
   </div>
 </main>
 

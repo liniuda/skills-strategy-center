@@ -24,6 +24,7 @@ import { renderArsenal } from './modules/arsenal.js';
 import { renderGraph } from './modules/graph.js';
 import { renderWorkbench } from './modules/workbench.js';
 import { renderDialog } from './modules/dialog.js';
+import { renderMcp } from './modules/mcp.js';
 import { requireAuth, renderUserMenu } from './auth.js';
 
 // 全局状态
@@ -152,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tabName === 'arsenal') renderArsenal();
       if (tabName === 'graph') renderGraph();
       if (tabName === 'dialog') renderDialog();
+      if (tabName === 'mcp') renderMcp();
       // 移动端: 切换 tab 后关闭抽屉
       if (window.innerWidth <= 768) {
         document.body.classList.remove('sidebar-open');
@@ -171,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderArsenal();
   renderGraph();
   renderDialog();
+  renderMcp();
 
   // 暴露模块刷新函数，供工作台部署后刷新生产模块
   window.sscRefreshModules = function () {
@@ -183,5 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderMonitor();
     renderArsenal();
     renderDialog();
+    renderMcp();
   };
 });
